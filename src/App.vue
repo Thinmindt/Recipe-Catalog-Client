@@ -1,6 +1,12 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <b-navbar type="dark" variant="info">
+      <b-navbar-brand to="/">Recipe Catalog</b-navbar-brand>
+      <b-navbar-nav>
+        <b-nav-item to="/new">New</b-nav-item>
+        <b-nav-item to="#" disabled>Categories</b-nav-item>
+      </b-navbar-nav>
+    </b-navbar>
     <router-view/>
   </div>
 </template>
@@ -16,8 +22,6 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
