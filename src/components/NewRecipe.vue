@@ -1,6 +1,5 @@
 <template>
   <b-container id="NewRecipe">
-    <div v-if="$apollo.queries.allRecipes.loading">Loading...</div>
     <div v-if="error">{{ error }}</div>
     <b-form @submit="onSubmit" >
       <b-form-row>
@@ -105,25 +104,12 @@
       </b-form-row>
       <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
-  {{allRecipes}}
   </b-container>
 </template>
 
 <script>
 import gql from 'graphql-tag'
-export const GET_ALL_RECIPES = gql`
-query {
-  allRecipes {
-    edges {
-      node {
-        id
-        title
-        type
-        bookTitle
-      }
-    }
-  }
-}`
+import { GET_ALL_RECIPES } from './Home.vue'
 export const SUBMIT_RECIPE = gql`
 mutation SubmitRecipe($title: String!, $type: String!, $webLink: String, $bookTitle: String, $bookPage: Int, $bookPicture: String, $notes: String, $rating: Int){
   createRecipe (title:$title, type:$type, webLink:$webLink, bookTitle:$bookTitle, bookPage:$bookPage, bookPicture:$bookPicture, notes:$notes, rating: $rating) {
@@ -217,14 +203,6 @@ export default {
         return true
       } else {
         return false
-      }
-    }
-  },
-  apollo: {
-    allRecipes: {
-      query: GET_ALL_RECIPES,
-      error (error) {
-        this.error = JSON.stringify(error.message)
       }
     }
   }

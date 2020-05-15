@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/Home'
+import Home from '@/components/Home'
 import NewRecipe from '@/components/NewRecipe'
+import Recipe from '@/components/Recipe'
 
 Vue.use(Router)
 
@@ -16,6 +17,12 @@ export default new Router({
       path: '/new',
       name: 'NewRecipe',
       component: NewRecipe
+    },
+    {
+      path: '/recipe',
+      name: 'Recipe',
+      component: Recipe,
+      props: true
     }
   ]
 })
