@@ -1,10 +1,51 @@
 import Vue from 'vue'
+import BootstrapVue from 'bootstrap-vue'
 import App from './App.vue'
 import router from './router'
 
-Vue.config.productionTip = false
+import VueApollo from 'vue-apollo'
 
+import ApolloClient from 'apollo-client'
+import { HttpLink } from 'apollo-link-http'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.config.productionTip = false
+Vue.use(BootstrapVue)
+Vue.use(VueApollo)
+
+// const getHeaders = () => {
+//   const headers = {}
+//   const token = window.localStorage.getItem('apollo-token')
+//   if (token) {
+//     headers.authorization = `Bearer ${token}`
+//   }
+//   return headers
+// }
+
+// Create an http link:
+const link = new HttpLink({
+  uri: 'http://192.168.50.9:5000/graphql?',
+  fetch,
+  headers: {} // getHeaders()
+})
+
+const client = new ApolloClient({
+  link: link,
+  cache: new InMemoryCache({
+    addTypename: true
+  })
+})
+
+const apolloProvider = new VueApollo({
+  defaultClient: client
+})
+
+/* eslint-disable no-new */
 new Vue({
   router,
+  apolloProvider,
   render: h => h(App)
 }).$mount('#app')
