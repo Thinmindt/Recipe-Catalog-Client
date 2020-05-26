@@ -10,12 +10,14 @@ const routes = [
     {
       path: '/',
       name: 'Home',
-      component: Home
+      component: Home,
+      props: true
     },
     {
-      path: '/new',
+      path: '/new/:darkMode',
       name: 'NewRecipe',
-      component: NewRecipe
+      component: NewRecipe,
+      props: true
     },
     {
       path: '/recipe/:recipeId',

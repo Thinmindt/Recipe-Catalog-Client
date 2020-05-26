@@ -1,13 +1,16 @@
 <template>
-  <b-container class="home">
+  <b-container class="home" id="body">
     <div v-if="$apollo.queries.allRecipes.loading">Loading...</div>
     <div v-if="error">{{ error }}</div>
     <b-card-group columns>
       <b-card v-for="recipe in allRecipes.edges" :key="recipe.id"
-        style="max-width: 20rem;"
+        id="recipe_card"
         v-on:click="clickRecipe(recipe.node.id)"
+        :bgVariant="cardColor"
+        :borderVariant="cardBorder"
+        textVariant="primary"
       >
-        <b-card-title>
+        <b-card-title id="recipe_title">
           {{ recipe.node.title }}
         </b-card-title>
       </b-card>
@@ -33,6 +36,7 @@ query {
 
 export default {
   name: 'Home',
+  props: ['darkMode'],
   data () {
     return {
       allRecipes: [],
@@ -51,10 +55,33 @@ export default {
         this.error = JSON.stringify(error.message)
       }
     }
+  },
+  computed: {
+    cardColor: function () {
+      if (this.darkMode) {
+        return "secondary"
+      } else {
+        return "secondary"
+      }
+    },
+    cardBorder: function () {
+      if (this.darkMode) {
+        return "secondary"
+      } else {
+        return "primary"
+      }
+    }     
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  #recipe_card {
+    cursor: pointer;
+    max-width: 20rem;
+  }
+  #body {
+    margin-top: 35px;
+  }
 </style>

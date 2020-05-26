@@ -130,6 +130,7 @@ mutation SubmitRecipe($title: String!, $type: String!, $webLink: String, $bookTi
 
 export default {
   name: 'NewRecipe',
+  props: ['darkMode'],
   data () {
     return {
       form: {
