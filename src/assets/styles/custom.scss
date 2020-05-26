@@ -1,0 +1,10 @@
+$customInfo: #365577;
+$customPrimary: #474545;
+$customSecondary: #cacad1;
+
+$info: $customInfo;
+$primary: $customPrimary;
+$secondary: $customSecondary;
+
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~bootstrap-vue/src/index.scss';
