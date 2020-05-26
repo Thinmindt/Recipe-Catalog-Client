@@ -1,8 +1,13 @@
+<!--
+NewRecipe.vue adds a new recipe. 
+-->
+
 <template>
   <b-container id="NewRecipe">
     <div v-if="error">{{ error }}</div>
     <b-form @submit="onSubmit">
-      <b-form-row>
+<!-- Title form begins -->
+      <b-form-row class="mb-1">
         <b-col cols="2">
           <label for="title-input">Title: </label>
         </b-col>
@@ -15,7 +20,8 @@
           ></b-form-input>
         </b-col>
       </b-form-row>
-      <b-form-row>
+<!-- Title ends, Type begins -->      
+      <b-form-row class="mb-1">
         <b-col cols="2">
           <label for="type-input">Type:</label>
         </b-col>
@@ -27,8 +33,9 @@
             required
           ></b-form-select>
         </b-col>
-      </b-form-row>
-      <b-form-row v-if="isWeb">
+      </b-form-row >
+<!-- WebSite option begins -->
+      <b-form-row v-if="isWeb" class="mb-1">
         <b-col cols="2">
           <label for="link-input">Link:</label>
         </b-col>
@@ -40,7 +47,8 @@
           ></b-form-input>
         </b-col>
       </b-form-row>
-      <b-form-row v-if="isBook">
+<!-- Book title option begins -->
+      <b-form-row v-if="isBook" class="mb-1">
         <b-col cols="2">
           <label for="book-title-input">Book Title:</label>
         </b-col>
@@ -64,7 +72,8 @@
           ></b-form-input>
         </b-col>
       </b-form-row>
-      <b-form-row v-if="isBook">
+<!-- Book picture option begins -->
+      <b-form-row v-if="isBook" class="mb-1">
         <b-col cols="2">
           <label for="book-picture">Picture(s):</label>
         </b-col>
@@ -77,19 +86,8 @@
           ></b-form-file>
         </b-col>
       </b-form-row>
-      <br>
-      <b-form-row>
-        <b-col cols="2">
-          <label for="rating-input">Rating:</label>
-        </b-col>
-        <b-col>
-          <b-form-rating
-            id="rating-input"
-            v-model="form.rating"
-          ></b-form-rating>
-        </b-col>
-      </b-form-row>
-      <b-form-row>
+<!-- Type ends, Notes begins -->
+      <b-form-row class="mb-1">
         <b-col cols="2">
           <label for="notes-input">Notes:</label>
         </b-col>
@@ -102,7 +100,20 @@
           ></b-form-textarea>
         </b-col>
       </b-form-row>
-      <b-button type="submit" variant="primary">Submit</b-button>
+<!-- Notes end, Rating begins -->
+      <b-form-row class="mb-5">
+        <b-col cols="2">
+          <label for="rating-input">Rating:</label>
+        </b-col>
+        <b-col>
+          <b-form-rating
+            id="rating-input"
+            v-model="form.rating"
+          ></b-form-rating>
+        </b-col>
+      </b-form-row>
+<!-- Rating end, submit begins -->
+      <b-button type="submit" variant="primary" >Submit</b-button>
     </b-form>
   </b-container>
 </template>
@@ -212,6 +223,7 @@ export default {
 
 <style scoped>
 #NewRecipe {
-  margin-top: 50px
+  margin-top: 50px;
+  color: white;
 }
 </style>
