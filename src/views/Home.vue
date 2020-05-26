@@ -1,18 +1,87 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <b-container class="home" id="body">
+    <div v-if="$apollo.queries.allRecipes.loading">Loading...</div>
+    <div v-if="error">{{ error }}</div>
+    <b-card-group columns>
+      <b-card v-for="recipe in allRecipes.edges" :key="recipe.id"
+        id="recipe_card"
+        v-on:click="clickRecipe(recipe.node.id)"
+        :bgVariant="cardColor"
+        :borderVariant="cardBorder"
+        textVariant="primary"
+      >
+        <b-card-title id="recipe_title">
+          {{ recipe.node.title }}
+        </b-card-title>
+      </b-card>
+    </b-card-group>
+  </b-container>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import gql from 'graphql-tag'
+export const GET_ALL_RECIPES = gql`
+query {
+  allRecipes {
+    edges {
+      node {
+        id
+        title
+        type
+        bookTitle
+      }
+    }
+  }
+}`
 
 export default {
   name: 'Home',
-  components: {
-    HelloWorld
+  props: ['darkMode'],
+  data () {
+    return {
+      allRecipes: [],
+      error: null
+    }
+  },
+  methods: {
+    clickRecipe: function (recipeId) {
+      this.$router.push({ name: 'Recipe', params: { recipeId: recipeId } })
+    }
+  },
+  apollo: {
+    allRecipes: {
+      query: GET_ALL_RECIPES,
+      error (error) {
+        this.error = JSON.stringify(error.message)
+      }
+    }
+  },
+  computed: {
+    cardColor: function () {
+      if (this.darkMode) {
+        return "secondary"
+      } else {
+        return "secondary"
+      }
+    },
+    cardBorder: function () {
+      if (this.darkMode) {
+        return "secondary"
+      } else {
+        return "primary"
+      }
+    }     
   }
 }
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  #recipe_card {
+    cursor: pointer;
+    max-width: 20rem;
+  }
+  #body {
+    margin-top: 35px;
+  }
+</style>
