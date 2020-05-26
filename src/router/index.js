@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/components/Home'
-import NewRecipe from '@/components/NewRecipe'
-import Recipe from '@/components/Recipe'
+import Home from '@/views/Home'
+import NewRecipe from '@/views/NewRecipe'
+import Recipe from '@/views/Recipe'
 
 Vue.use(VueRouter)
 
