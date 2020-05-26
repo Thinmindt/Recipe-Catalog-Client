@@ -111,8 +111,8 @@
 import gql from 'graphql-tag'
 import { GET_ALL_RECIPES } from './Home.vue'
 export const SUBMIT_RECIPE = gql`
-mutation SubmitRecipe($title: String!, $type: String!, $webLink: String, $bookTitle: String, $bookPage: Int, $bookPicture: String, $notes: String, $rating: Int){
-  createRecipe (title:$title, type:$type, webLink:$webLink, bookTitle:$bookTitle, bookPage:$bookPage, bookPicture:$bookPicture, notes:$notes, rating: $rating) {
+mutation SubmitRecipe($input: CreateRecipeInput!){
+  createRecipe (input:$input) {
     recipe {
       id
       title
@@ -160,14 +160,16 @@ export default {
       this.$apollo.mutate({
         mutation: SUBMIT_RECIPE,
         variables: {
-          title: this.form.title,
-          type: this.form.recipeType,
-          notes: this.form.notes,
-          rating: this.form.rating,
-          webLink: this.form.web.link,
-          bookTitle: this.form.book.title,
-          bookPage: this.form.book.page,
-          bookPicture: picture
+          input: {
+            title: this.form.title,
+            type: this.form.recipeType,
+            notes: this.form.notes,
+            rating: this.form.rating,
+            webLink: this.form.web.link,
+            bookTitle: this.form.book.title,
+            bookPage: this.form.book.page,
+            bookImagePath: picture
+          }
         },
         // eslint-disable-next-line
         update: (cache, { data: { createRecipe } }) => {
