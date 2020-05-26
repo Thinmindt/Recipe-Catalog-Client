@@ -1,7 +1,7 @@
 <template>
   <b-container id="NewRecipe">
     <div v-if="error">{{ error }}</div>
-    <b-form @submit="onSubmit" >
+    <b-form @submit="onSubmit">
       <b-form-row>
         <b-col cols="2">
           <label for="title-input">Title: </label>

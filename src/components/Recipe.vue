@@ -1,6 +1,6 @@
 <template>
-  <div class="recipe">
-    <b-container v-if="recipe">
+  <b-container class="recipe">
+    <b-form v-if="recipe" @submit="onSubmit" @reset="onCancel">
       <h1>{{ recipe.title }}</h1>
       <h4>Resource: {{ recipe.type }}</h4>
       <b-container v-if="recipe.type == 'Website'" class="border border-dark">
@@ -25,8 +25,21 @@
       <b-container v-if="editRating">
         <b-form-rating v-model="form.rating"></b-form-rating>
       </b-container>
-    </b-container>
-  </div>
+      <b-row align-h="end">
+        <b-button variant="danger">
+          Delete Recipe
+        </b-button>
+        <div v-if="editing">
+          <b-button  type="submit" variant="primary">
+            Submit
+          </b-button>
+          <b-button type="reset" variant="danger">
+            Cancel
+          </b-button>
+        </div>
+      </b-row>
+    </b-form>
+  </b-container>
 </template>
 
 <script>
@@ -67,6 +80,19 @@ export default {
     clickEditRating: function () {
       this.editRating = true
       this.form.rating = this.recipe.rating
+    },
+    onSubmit: function () {
+
+    },
+    onCancel: function () {
+      this.editing = false
+      this.editRating = false
+      this.editNotes = false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    }
+  },
+  computed: {
+    editing: function () {
+      return this.editNotes || this.editRating
     }
   },
   apollo: {
