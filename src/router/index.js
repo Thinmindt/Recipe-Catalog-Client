@@ -24,6 +24,12 @@ const routes = [
       name: 'Recipe',
       component: Recipe,
       props: true
+    },
+    {
+      path: '/recipe/edit/:recipeId',
+      name: 'EditRecipe',
+      component: NewRecipe,
+      props: true
     }
   ]
 

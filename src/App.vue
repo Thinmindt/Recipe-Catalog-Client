@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     redirectToNewRecipe() {
-      this.$router.push({ name: 'NewRecipe', params: {darkMode: this.darkMode}})
+      this.$router.push({ name: 'NewRecipe', params: {darkMode: this.darkMode} })
     }
   }
 }

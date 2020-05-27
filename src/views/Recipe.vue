@@ -1,5 +1,5 @@
 <template>
-  <b-container class="recipe">
+  <b-container class="recipe" v-if="recipe">
 <!-- Title -->
     <h1>{{ recipe.title }}</h1>
 <!-- Link -->
@@ -16,11 +16,8 @@
     <b-form-rating v-model="recipe.rating" readonly></b-form-rating>
 <!-- Buttons -->
     <b-row align-h="end">
-      <b-button variant="danger">
-        Delete Recipe
-      </b-button>
       <div>
-        <b-button variant="primary">
+        <b-button variant="primary" @click="editRecipe">
           Edit
         </b-button>
       </div>
@@ -47,100 +44,17 @@ query OneRecipe ($recipeId: ID!) {
     rating
   }
 }`
-/**
- * GraphQL query to update a recipe. Requires at least an ID.
- */
-export const UPDATE_RECIPE = gql`
-mutation UpdateRecipe($input: UpdateRecipeInput!){
-  updateRecipe (input: $input) {
-    recipe {
-      id
-      title
-      type
-      webLink
-      bookTitle
-      bookPage
-      bookImagePath
-      notes
-      rating
-    }
-  }
-}
-`
 export default {
   name: 'Recipe',
   props: ['recipeId'],
   data () {
     return {
       error: null,
-      form: {
-        title: '',
-        recipeType: '',
-        notes: '',
-        rating: 0,
-        web: {
-          link: ''
-        },
-        book: {
-          title: '',
-          page: '',
-          picture: ''
-        }
-      }
     }
   },
   methods: {
-    onSubmit: function () {
-      var picture = ''
-      // submit mutation request
-      this.$apollo.mutate({
-        mutation: UPDATE_RECIPE,
-        variables: {
-          input: {
-            id: this.recipeId,
-            title: this.form.title,
-            type: this.form.recipeType,
-            notes: this.form.notes,
-            rating: this.form.rating,
-            webLink: this.form.web.link,
-            bookTitle: this.form.book.title,
-            bookPage: this.form.book.page,
-            bookImagePath: picture
-          }
-        },
-        // eslint-disable-next-line
-        update: (cache, { data: { updateRecipe } }) => {
-          // Read the data from our cache for this query.
-          // eslint-disable-next-line
-          try {
-            const data = cache.readQuery({
-              query: GET_ONE_RECIPE
-            })
-            var insertedRecipe = {node: updateRecipe,
-              __typename: 'RecipeObject'}
-            data.pop()
-            data.push(insertedRecipe)
-            cache.writeQuery({
-              query: GET_ONE_RECIPE,
-              data
-            })
-          } catch (e) {
-            console.error(e)
-          }
-        }
-      })
-    }
-  },
-  watch: {
-    recipe: function (recipe) {
-      this.form.title = recipe.title
-      this.form.rating = recipe.rating
-      this.form.notes = recipe.notes
-      this.form.recipeType = recipe.type
-      this.form.book.title = recipe.bookTitle
-      this.form.book.page = recipe.bookPage
-      this.form.book.picture = recipe.bookImagePath
-      this.form.web.link = recipe.webLink
+    editRecipe: function () {
+      this.$router.push({ name: "EditRecipe", params: {recipeId: this.recipeId}})
     }
   },
   apollo: {

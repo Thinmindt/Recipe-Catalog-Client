@@ -102,7 +102,14 @@
           ></b-form-textarea>
         </b-col>
       </b-form-row>
-      <b-button type="submit" variant="primary">Submit</b-button>
+      <b-form-row>
+        <b-col>
+          <b-button type="submit" variant="primary">Submit</b-button>
+        </b-col>
+        <b-col align-self="end" cols="*">
+          <b-button v-if="recipeId" @click="deleteRecipe" variant="danger">Delete</b-button>
+        </b-col>
+      </b-form-row>
     </b-form>
   </b-container>
 </template>
@@ -110,6 +117,11 @@
 <script>
 import gql from 'graphql-tag'
 import { GET_ALL_RECIPES } from './Home.vue'
+import { GET_ONE_RECIPE } from './Recipe.vue'
+
+/**
+ * GraphQL query for creating a new recipe entry
+ */
 export const SUBMIT_RECIPE = gql`
 mutation SubmitRecipe($input: CreateRecipeInput!){
   createRecipe (input:$input) {
@@ -128,9 +140,41 @@ mutation SubmitRecipe($input: CreateRecipeInput!){
 }
 `
 
+/**
+ * GraphQL query to update a recipe. Requires at least an ID.
+ */
+export const UPDATE_RECIPE = gql`
+mutation UpdateRecipe($input: UpdateRecipeInput!){
+  updateRecipe (input: $input) {
+    recipe {
+      id
+      title
+      type
+      webLink
+      bookTitle
+      bookPage
+      bookImagePath
+      notes
+      rating
+    }
+  }
+}
+`
+
+/** 
+ * GraphQL Query to delete a recipe
+ */
+export const DELETE_RECIPE = gql`
+mutation DeleteRecipe($input: DeleteRecipeInput!){
+  deleteRecipe (input: $input) {
+    ok
+  }
+}
+`
+
 export default {
   name: 'NewRecipe',
-  props: ['darkMode'],
+  props: ['darkMode', 'recipeId'],
   data () {
     return {
       form: {
@@ -154,40 +198,118 @@ export default {
   },
   methods: {
     onSubmit: function () {
-      // save picture to disk, save relative link
-      var picture = ''
-      // submit mutation request
+      if (!this.recipeId) { // Not editing recipe, submit new one
+        // save picture to disk, save relative link
+        var picture = ''
+        // submit mutation request
+        this.$apollo.mutate({
+          mutation: SUBMIT_RECIPE,
+          variables: {
+            input: {
+              title: this.form.title,
+              type: this.form.recipeType,
+              notes: this.form.notes,
+              rating: this.form.rating,
+              webLink: this.form.web.link,
+              bookTitle: this.form.book.title,
+              bookPage: this.form.book.page,
+              bookImagePath: picture
+            }
+          },
+          // eslint-disable-next-line
+          update: (cache, { data: { createRecipe } }) => {
+            // Read the data from our cache for this query.
+            // eslint-disable-next-line
+            try {
+              const data = cache.readQuery({
+                query: GET_ALL_RECIPES
+              })
+              var insertedRecipe = {node: createRecipe.recipe,
+                __typename: 'RecipeObjectEdge'}
+              data.allRecipes.edges.push(insertedRecipe)
+              cache.writeQuery({
+                query: GET_ALL_RECIPES,
+                data
+              })
+            } catch (e) {
+              console.error(e)
+            }
+          }
+        })
+      } else { // editing recipe, submit mutation
+        // submit mutation request
+        this.$apollo.mutate({
+          mutation: UPDATE_RECIPE,
+          variables: {
+            input: {
+              id: this.recipeId,
+              title: this.form.title,
+              type: this.form.recipeType,
+              notes: this.form.notes,
+              rating: this.form.rating,
+              webLink: this.form.web.link,
+              bookTitle: this.form.book.title,
+              bookPage: this.form.book.page,
+              bookImagePath: picture
+            }
+          },
+          // eslint-disable-next-line
+          update: (cache, { data: { updateRecipe } }) => {
+            // Read the data from our cache for this query.
+            // eslint-disable-next-line
+            try {
+              const data = cache.readQuery({
+                query: GET_ONE_RECIPE
+              })
+              var insertedRecipe = {node: updateRecipe,
+                __typename: 'RecipeObject'}
+              data.pop()
+              data.push(insertedRecipe)
+              cache.writeQuery({
+                query: GET_ONE_RECIPE,
+                data
+              })
+            } catch (e) {
+              console.error(e)
+            }
+          }
+        })
+        this.$router.push({ name: "Recipe", params: {recipeId: this.recipeId} })
+      }
+    },
+    deleteRecipe: function () {
       this.$apollo.mutate({
-        mutation: SUBMIT_RECIPE,
+        mutation: DELETE_RECIPE,
         variables: {
           input: {
-            title: this.form.title,
-            type: this.form.recipeType,
-            notes: this.form.notes,
-            rating: this.form.rating,
-            webLink: this.form.web.link,
-            bookTitle: this.form.book.title,
-            bookPage: this.form.book.page,
-            bookImagePath: picture
+            id: this.recipeId
           }
         },
         // eslint-disable-next-line
-        update: (cache, { data: { createRecipe } }) => {
-          // Read the data from our cache for this query.
-          // eslint-disable-next-line
-          try {
-            const data = cache.readQuery({
-              query: GET_ALL_RECIPES
-            })
-            var insertedRecipe = {node: createRecipe.recipe,
-              __typename: 'RecipeObjectEdge'}
-            data.allRecipes.edges.push(insertedRecipe)
-            cache.writeQuery({
-              query: GET_ALL_RECIPES,
-              data
-            })
-          } catch (e) {
-            console.error(e)
+        update: (cache, { data: { deleteRecipe } }) => {
+          // Update the cache.
+          if (deleteRecipe.ok) {
+            try {
+              const data = cache.readQuery({
+                query: GET_ALL_RECIPES
+              })
+              const allRecipes = data.allRecipes.edges
+              var recipeToDelete = 0;
+              for (var i = 0; i < allRecipes.length; i++) {
+                if (allRecipes[i].node.id === this.recipeId) {
+                  recipeToDelete = i
+                  break
+                }
+              }
+              allRecipes.splice(recipeToDelete, 1)
+              cache.writeQuery({
+                query: GET_ALL_RECIPES,
+                data
+              })
+              this.$router.push({ name: "Home"})
+            } catch (e) {
+              console.error(e)
+            }
           }
         }
       })
@@ -206,6 +328,33 @@ export default {
         return true
       } else {
         return false
+      }
+    }
+  },
+  watch: {
+    recipe: function (recipe) {
+      this.form.title = recipe.title
+      this.form.rating = recipe.rating
+      this.form.notes = recipe.notes
+      this.form.recipeType = recipe.type
+      this.form.book.title = recipe.bookTitle
+      this.form.book.page = recipe.bookPage
+      this.form.book.picture = recipe.bookImagePath
+      this.form.web.link = recipe.webLink
+    }
+  },
+  apollo: {
+    recipe: {
+      query: GET_ONE_RECIPE,
+      variables () {
+        return {
+          recipeId: this.recipeId
+        }
+      },
+      error (error) {
+        if (this.recipeId) {
+          this.error = JSON.stringify(error.message)
+        }
       }
     }
   }
