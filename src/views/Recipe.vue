@@ -3,54 +3,40 @@ Recipe.vue allows you to view and edit established recipe.
 -->
 
 <template>
-  <b-container class="recipe">
-    <b-form v-if="recipe" @submit="onSubmit" @reset="onCancel">
-      <h1>{{ recipe.title }}</h1>
-      <h4>Resource: {{ recipe.type }}</h4>
-      <b-container v-if="recipe.type == 'Website'" class="border border-dark">
-        <p>Link: {{ recipe.webLink }}</p>
-      </b-container>
-      <b-container v-if="recipe.type == 'Book'" class="border border-dark">
-        <p>Title: {{ recipe.bookTitle }}</p>
-        <p>Page: {{ recipe.bookPage }}</p>
-        <p>Image: {{ recipe.bookImagePath }}</p>
-      </b-container>
-      <p @click="clickEditNotes">Notes: {{ recipe.notes }}</p>
-      <b-form-textarea
-            id="notes-input"
-            v-if="editNotes"
-            v-model="form.notes"
-            placeholder="Enter notes about the recipe here..."
-            rows="5"
-          ></b-form-textarea>
-      <b-container v-if="editRating === false" @click="clickEditRating">
-        <b-form-rating v-model="recipe.rating" readonly></b-form-rating>
-      </b-container>
-      <b-container v-if="editRating">
-        <b-form-rating v-model="form.rating"></b-form-rating>
-      </b-container>
-      <b-row align-h="end">
-        <b-button variant="danger">
-          Delete Recipe
+  <b-container class="recipe" v-if="recipe">
+<!-- Title -->
+    <h1>{{ recipe.title }}</h1>
+<!-- Link -->
+    <p v-if="recipe.type == 'Website'">Link: {{ recipe.webLink }}</p>
+<!-- Book Stuff -->
+    <b-container v-if="recipe.type == 'Book'" class="border border-dark">
+      <p>Title: {{ recipe.bookTitle }}</p>
+      <p>Page: {{ recipe.bookPage }}</p>
+      <p>Image: {{ recipe.bookImagePath }}</p>
+    </b-container>
+<!-- Notes -->
+    <p>Notes: {{ recipe.notes }}</p>
+<!-- Rating -->
+    <b-form-rating v-model="recipe.rating" readonly></b-form-rating>
+<!-- Buttons -->
+    <b-row align-h="end">
+      <div>
+        <b-button variant="primary" @click="editRecipe">
+          Edit
         </b-button>
-        <div v-if="editing">
-          <b-button  type="submit" variant="primary">
-            Submit
-          </b-button>
-          <b-button type="reset" variant="danger">
-            Cancel
-          </b-button>
-        </div>
-      </b-row>
-    </b-form>
+      </div>
+    </b-row>
   </b-container>
 </template>
 
 <script>
 import gql from 'graphql-tag'
+/**
+ * GraphQL query to get data for a single recipe
+ */
 export const GET_ONE_RECIPE = gql`
-query OneRecipe ($recipeId: String) {
-  recipe (recipeId: $recipeId) {
+query OneRecipe ($recipeId: ID!) {
+  recipe (id: $recipeId) {
     id
     title
     type
@@ -68,35 +54,11 @@ export default {
   data () {
     return {
       error: null,
-      editNotes: false,
-      editRating: false,
-      form: {
-        notes: '',
-        rating: 0
-      }
     }
   },
   methods: {
-    clickEditNotes: function () {
-      this.editNotes = true
-      this.form.notes = this.recipe.notes
-    },
-    clickEditRating: function () {
-      this.editRating = true
-      this.form.rating = this.recipe.rating
-    },
-    onSubmit: function () {
-
-    },
-    onCancel: function () {
-      this.editing = false
-      this.editRating = false
-      this.editNotes = false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-    }
-  },
-  computed: {
-    editing: function () {
-      return this.editNotes || this.editRating
+    editRecipe: function () {
+      this.$router.push({ name: "EditRecipe", params: {recipeId: this.recipeId}})
     }
   },
   apollo: {
