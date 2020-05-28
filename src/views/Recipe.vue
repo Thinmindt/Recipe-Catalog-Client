@@ -5,23 +5,36 @@ Recipe.vue allows you to view and edit established recipe.
 <template>
   <b-container class="recipe" v-if="recipe">
 <!-- Title -->
-    <h1>{{ recipe.title }}</h1>
+    <h1 class="mt-3 mb-1">{{ recipe.title }}
+        <b-form-rating 
+          :id="ratingId" 
+          class="mt-1 mb-1"
+          v-model="recipe.rating" 
+          readonly 
+          variant="warning" 
+          size="sm" 
+          inline value="10" 
+          no-border>
+        </b-form-rating>
+        </h1>
 <!-- Link -->
-    <p v-if="recipe.type == 'Website'">Link: {{ recipe.webLink }}</p>
+    <p class="mt-1 mb-1">
+      Link: 
+    </p>
+    <p v-if="recipe.type == 'Website'">{{ recipe.webLink }}</p>
 <!-- Book Stuff -->
-    <b-container v-if="recipe.type == 'Book'" class="border border-dark">
-      <p>Title: {{ recipe.bookTitle }}</p>
-      <p>Page: {{ recipe.bookPage }}</p>
-      <p>Image: {{ recipe.bookImagePath }}</p>
+    <b-container v-if="recipe.type == 'Book'" class="border border-dark mt-1 mb-3">
+      <p class="mt-1 mb-1">Title: {{ recipe.bookTitle }}</p>
+      <p class="mt-1 mb-1">Page: {{ recipe.bookPage }}</p>
+      <p class="mt-1 mb-1">Image: {{ recipe.bookImagePath }}</p>
     </b-container>
 <!-- Notes -->
-    <p>Notes: {{ recipe.notes }}</p>
-<!-- Rating -->
-    <b-form-rating v-model="recipe.rating" readonly></b-form-rating>
+    <p class="mt-1 mb-1">Notes: </p>
+    <p class="mb-5">{{ recipe.notes }}</p>
 <!-- Buttons -->
     <b-row align-h="end">
       <div>
-        <b-button variant="primary" @click="editRecipe">
+        <b-button variant="success" @click="editRecipe">
           Edit
         </b-button>
       </div>
@@ -50,10 +63,19 @@ query OneRecipe ($recipeId: ID!) {
 }`
 export default {
   name: 'Recipe',
-  props: ['recipeId'],
+  props: ['recipeId', 'darkMode'],
   data () {
     return {
       error: null,
+    }
+  },
+  computed: {
+    ratingId: function () {
+      if (this.darkMode) {
+        return "dark"
+      } else {
+        return "light"
+      }
     }
   },
   methods: {
@@ -79,4 +101,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#dark {
+  background-color: rgb(37, 31, 31);
+}
+#light {
+  background-color: rgb(231, 182, 182);
+}
 </style>
