@@ -119,6 +119,9 @@ import gql from 'graphql-tag'
 import { GET_ALL_RECIPES } from './Home.vue'
 import { GET_ONE_RECIPE } from './Recipe.vue'
 
+/** For file uploads */
+//import { useMutation } from '@apollo/react-hooks'
+
 /**
  * GraphQL query for creating a new recipe entry
  */
@@ -197,12 +200,10 @@ export default {
     }
   },
   methods: {
-    onSubmit: function () {
+    async onSubmit() {
       if (!this.recipeId) { // Not editing recipe, submit new one
-        // save picture to disk, save relative link
-        var picture = ''
         // submit mutation request
-        this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: SUBMIT_RECIPE,
           variables: {
             input: {
@@ -213,7 +214,7 @@ export default {
               webLink: this.form.web.link,
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
-              bookImagePath: picture
+              image: this.form.book.picture
             }
           },
           // eslint-disable-next-line
@@ -250,7 +251,7 @@ export default {
               webLink: this.form.web.link,
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
-              bookImagePath: picture
+              image: this.form.book.picture
             }
           },
           // eslint-disable-next-line
@@ -259,14 +260,18 @@ export default {
             // eslint-disable-next-line
             try {
               const data = cache.readQuery({
-                query: GET_ONE_RECIPE
+                query: GET_ONE_RECIPE,
+                variables: {
+                  recipeId: this.recipeId
+                }
               })
-              var insertedRecipe = {node: updateRecipe,
-                __typename: 'RecipeObject'}
-              data.pop()
-              data.push(insertedRecipe)
+              var insertedRecipe = updateRecipe.recipe
+              data.recipe = insertedRecipe
               cache.writeQuery({
                 query: GET_ONE_RECIPE,
+                variables: {
+                  recipeId: this.recipeId
+                },
                 data
               })
             } catch (e) {
@@ -333,14 +338,25 @@ export default {
   },
   watch: {
     recipe: function (recipe) {
-      this.form.title = recipe.title
-      this.form.rating = recipe.rating
-      this.form.notes = recipe.notes
-      this.form.recipeType = recipe.type
-      this.form.book.title = recipe.bookTitle
-      this.form.book.page = recipe.bookPage
-      this.form.book.picture = recipe.bookImagePath
-      this.form.web.link = recipe.webLink
+      if (recipe) {
+        this.form.title = recipe.title
+        this.form.rating = recipe.rating
+        this.form.notes = recipe.notes
+        this.form.recipeType = recipe.type
+        this.form.book.title = recipe.bookTitle
+        this.form.book.page = recipe.bookPage
+        this.form.book.picture = null
+        this.form.web.link = recipe.webLink
+      } else {
+        this.form.title = ''
+        this.form.rating = 0
+        this.form.notes = ''
+        this.form.recipeType = ''
+        this.form.book.title = ''
+        this.form.book.page = 0
+        this.form.book.picture = null
+        this.form.web.link = ''
+      }
     }
   },
   apollo: {

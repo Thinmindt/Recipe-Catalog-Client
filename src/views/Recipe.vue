@@ -9,6 +9,7 @@
       <p>Title: {{ recipe.bookTitle }}</p>
       <p>Page: {{ recipe.bookPage }}</p>
       <p>Image: {{ recipe.bookImagePath }}</p>
+      <img :src=imageUrl>
     </b-container>
 <!-- Notes -->
     <p>Notes: {{ recipe.notes }}</p>
@@ -50,6 +51,12 @@ export default {
   data () {
     return {
       error: null,
+    }
+  },
+  computed: {
+    imageUrl: function() {
+      var filename = this.recipe.bookImagePath
+      return "http://192.168.50.9:5000/image/" + filename
     }
   },
   methods: {
