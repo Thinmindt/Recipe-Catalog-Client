@@ -1,6 +1,10 @@
-$customInfo: #365577;
-$customPrimary: #474545;
-$customSecondary: #cacad1;
+/**
+custom.scss modifies vue/bootstrap original color schemes.
+*/
+
+$customInfo: #1d195588;
+$customPrimary: #0a0808;
+$customSecondary: #e8e5ee;
 
 $info: $customInfo;
 $primary: $customPrimary;

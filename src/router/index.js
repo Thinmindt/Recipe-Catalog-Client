@@ -1,3 +1,7 @@
+/** 
+ * index.js imports the pages from src/views/, allowing the browser to navigate these pages.
+ */
+
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home'
@@ -11,10 +15,10 @@ const routes = [
       path: '/',
       name: 'Home',
       component: Home,
-      props: true
+      props: true 
     },
     {
-      path: '/new/:darkMode',
+      path: '/new',
       name: 'NewRecipe',
       component: NewRecipe,
       props: true

@@ -1,3 +1,7 @@
+/**
+ * main.js declares dependencies and initalizes apollo gql requests. 
+ */
+
 import Vue from 'vue'
 import './assets/styles/custom.scss'
 import BootstrapVue from 'bootstrap-vue'
@@ -13,6 +17,8 @@ import { createUploadLink } from 'apollo-upload-client'
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 Vue.use(VueApollo)
+
+// Use this during production so the back-end can communicate with front-end securely:
 
 // const getHeaders = () => {
 //   const headers = {}
