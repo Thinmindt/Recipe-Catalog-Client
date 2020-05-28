@@ -1,3 +1,7 @@
+<!--
+Recipe.vue allows you to view and edit established recipe.
+-->
+
 <template>
   <b-container class="recipe" v-if="recipe">
 <!-- Title -->

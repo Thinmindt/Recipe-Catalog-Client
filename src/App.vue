@@ -1,6 +1,10 @@
+<!-- 
+App.vue contains: navigataion bar, darkMode toggle setup and style options.
+-->
+
 <template>
-  <div id="app" :class="background">
-    <b-navbar type="dark" :variant="variant">
+  <div id="app" :class="cssClass">
+    <b-navbar type="dark" variant="info">
       <b-navbar-brand to="/">Recipe Catalog</b-navbar-brand>
       <b-navbar-nav>
         <b-nav-item @click="redirectToNewRecipe()">New</b-nav-item>
@@ -11,27 +15,22 @@
         </b-form-checkbox>
       </b-navbar-nav>
     </b-navbar>
-    <router-view :darkMode="darkMode"/>
+    <router-view :darkMode="darkMode"/> <!-- feeds darkMode to router -->
   </div>
 </template>
 
 <script>
-export default {
+// vue specific tool:
+export default { 
   name: 'App',
   data () {
     return {
       darkMode: true
     }
   },
-  computed: {
-    variant: function () {
-      if (this.darkMode) {
-        return "dark"
-      } else {
-        return "info"
-      }
-    },
-    background: function () {
+  computed: {  // computed: variable depends on another reactive variable:
+// App Class background for App page:
+    cssClass: function () {
       if (this.darkMode) {
         return "dark"
       } else {
@@ -41,7 +40,7 @@ export default {
   },
   methods: {
     redirectToNewRecipe() {
-      this.$router.push({ name: 'NewRecipe', params: {darkMode: this.darkMode} })
+      this.$router.push({ name: 'NewRecipe'})
     }
   }
 }
@@ -49,14 +48,20 @@ export default {
 
 <style lang="scss">
 .dark {
-  background-color: black;
+  background-color: rgb(37, 31, 31);
 }
 .light {
-  background-color: white;
+  background-color: rgb(231, 182, 182);
 }
 #app {
+  margin-bottom: 0px;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh; 
+}
+body {
+  min-height: 100vh;
+  color:white;
 }
 </style>

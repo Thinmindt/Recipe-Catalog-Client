@@ -1,3 +1,7 @@
+<!--
+Home.vue contains: cards component setup and style options.
+-->
+
 <template>
   <b-container class="home" id="body">
     <div v-if="$apollo.queries.allRecipes.loading">Loading...</div>
@@ -44,6 +48,9 @@ export default {
     }
   },
   methods: {
+    /**
+     * use view router to navigate to recipe page
+     */
     clickRecipe: function (recipeId) {
       this.$router.push({ name: 'Recipe', params: { recipeId: recipeId } })
     }
@@ -61,7 +68,7 @@ export default {
       if (this.darkMode) {
         return "secondary"
       } else {
-        return "secondary"
+        return "black"
       }
     },
     cardBorder: function () {
@@ -83,5 +90,6 @@ export default {
   }
   #body {
     margin-top: 35px;
+    margin-bottom: 0px;
   }
 </style>
