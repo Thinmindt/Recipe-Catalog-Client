@@ -48,10 +48,12 @@ export default {
 
 <style lang="scss">
 .dark {
-  background-color: rgb(37, 31, 31);
+  $darkBackground: rgb(37, 37, 37);
+  background-color: $darkBackground;
 }
 .light {
-  background-color: rgb(231, 182, 182);
+  $lightBackground: rgb(139, 129, 155);
+  background-color: $lightBackground;
 }
 #app {
   margin-bottom: 0px;
