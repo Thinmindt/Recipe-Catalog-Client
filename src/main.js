@@ -4,18 +4,19 @@
 
 import Vue from 'vue'
 import './assets/styles/custom.scss'
-import BootstrapVue from 'bootstrap-vue'
+import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
 import App from './App.vue'
 import router from './router'
 
-import VueApollo from 'vue-apollo'
 
+import VueApollo from 'vue-apollo'
 import ApolloClient from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { createUploadLink } from 'apollo-upload-client'
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
+Vue.use(BootstrapVueIcons)
 Vue.use(VueApollo)
 
 // Use this during production so the back-end can communicate with front-end securely:

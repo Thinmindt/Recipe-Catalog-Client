@@ -5,8 +5,21 @@ NewRecipe.vue adds a new recipe.
 <template>
   <b-container id="NewRecipe">
     <div v-if="error">{{ error }}</div>
-    <b-form @submit="onSubmit">
+    <b-form @submit="onSubmit" @reset="onReset">
 <!-- Title form begins -->
+      <b-form-row>
+        <b-col>
+        </b-col>
+        <b-col align-self="end" cols="*" class="mb-3">
+          <b-button 
+            v-if="recipeId" 
+            @click="deleteRecipe" 
+            variant="danger" 
+            size="sm">
+            <b-icon icon="trash"></b-icon>
+            </b-button>
+        </b-col>
+      </b-form-row>
       <b-form-row class="mb-1">
         <b-col cols="2">
           <label for="title-input">Title: </label>
@@ -88,16 +101,32 @@ NewRecipe.vue adds a new recipe.
       </b-form-row>
 <!-- Type ends, Notes begins -->
       <b-form-row class="mb-1">
-        <b-col cols="2">
+        <b-col >
           <label for="notes-input">Notes:</label>
         </b-col>
         <b-col>
-          <b-form-textarea
+          <div class="editor">
+            <editor-menu-bar :editor="editor" v-slot="{commands, isActive}">
+              <div class="editorMenuBar">
+                <button           
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.bold() }"
+                  @click="commands.bold"
+                 >
+                  Bold
+                </button>
+              </div>  
+            </editor-menu-bar>
+            <div class="editorContent">
+              <editor-content class="editor__content" :editor="editor" /> 
+            </div>
+          </div>
+          <!-- <b-form-textarea
             id="notes-input"
             v-model="form.notes"
             placeholder="Enter notes about the recipe here..."
-            rows="5"
-          ></b-form-textarea>
+            rows="15"
+          ></b-form-textarea> -->
         </b-col>
       </b-form-row>
 <!-- Notes end, Rating begins -->
@@ -109,16 +138,27 @@ NewRecipe.vue adds a new recipe.
           <b-form-rating
             id="rating-input"
             v-model="form.rating"
+            variant="warning"
+            no-border
           ></b-form-rating>
         </b-col>
       </b-form-row>
 <!-- Rating end, submit begins -->
+      <b-form-row class="mb-3">
+        <b-col > 
+          <!-- empty column to offset submit block-->
+        </b-col>
+        <b-col cols="10">
+          <b-button type="submit" block variant="success" >Submit</b-button>
+        </b-col>
+      </b-form-row>
+<!-- Submit ends, Cancel begins -->
       <b-form-row>
         <b-col>
-          <b-button type="submit" variant="primary" >Submit</b-button>
+          <!-- empty column to offset cancel block-->
         </b-col>
-        <b-col align-self="end" cols="*">
-          <b-button v-if="recipeId" @click="deleteRecipe" variant="danger">Delete</b-button>
+        <b-col cols="*">
+          <b-button type="reset" variant="danger" size="sm">Cancel</b-button>
         </b-col>
       </b-form-row>
     </b-form>
@@ -129,6 +169,27 @@ NewRecipe.vue adds a new recipe.
 import gql from 'graphql-tag'
 import { GET_ALL_RECIPES } from './Home.vue'
 import { GET_ONE_RECIPE } from './Recipe.vue'
+
+import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
+import {
+  Blockquote,
+  CodeBlock,
+  HardBreak,
+  Heading,
+  HorizontalRule,
+  OrderedList,
+  BulletList,
+  ListItem,
+  TodoItem,
+  TodoList,
+  Bold,
+  Code,
+  Italic,
+  Link,
+  Strike,
+  Underline,
+  History,
+} from 'tiptap-extensions'
 
 /** For file uploads */
 //import { useMutation } from '@apollo/react-hooks'
@@ -189,6 +250,10 @@ mutation DeleteRecipe($input: DeleteRecipeInput!){
 export default {
   name: 'NewRecipe',
   props: ['darkMode', 'recipeId'],
+  components: {
+    EditorContent,
+    EditorMenuBar
+  },
   data () {
     return {
       form: {
@@ -207,8 +272,33 @@ export default {
       },
       recipeTypes: ['Book', 'Website'],
       allRecipes: [],
-      error: null
+      error: null,
+      editor: null
     }
+  },
+  mounted() {
+    this.editor = new Editor({
+      extensions: [
+          new Blockquote(),
+          new BulletList(),
+          new CodeBlock(),
+          new HardBreak(),
+          new Heading({ levels: [1, 2, 3] }),
+          new HorizontalRule(),
+          new ListItem(),
+          new OrderedList(),
+          new TodoItem(),
+          new TodoList(),
+          new Link(),
+          new Bold(),
+          new Code(),
+          new Italic(),
+          new Strike(),
+          new Underline(),
+          new History(),
+        ],
+      content: '<p>Content</p>'
+    })
   },
   methods: {
     async onSubmit() {
@@ -292,6 +382,9 @@ export default {
         })
         this.$router.push({ name: "Recipe", params: {recipeId: this.recipeId} })
       }
+    },
+    onReset: function () {
+      this.$router.push({ name: "Recipe", params: {recipeId: this.recipeId} })
     },
     deleteRecipe: function () {
       this.$apollo.mutate({
@@ -384,6 +477,9 @@ export default {
         }
       }
     }
+  },
+  beforeDestroy() {
+    this.editor.destroy()
   }
 }
 </script>
@@ -392,5 +488,8 @@ export default {
 #NewRecipe {
   margin-top: 50px;
   color: white;
+}
+#rating-input {
+  background-color: rgba(245, 245, 220, 0);
 }
 </style>

@@ -17,6 +17,22 @@ Home.vue contains: cards component setup and style options.
         <b-card-title id="recipe_title">
           {{ recipe.node.title }}
         </b-card-title>
+        <b-card-sub-title>
+          <p>
+            Category/Description-Here
+          </p>
+        </b-card-sub-title>
+        <b-card-text align="right">
+          <b-form-rating 
+            id="ratingId" 
+            v-model="recipe.node.rating" 
+            readonly 
+            variant="warning" 
+            size="sm" 
+            inline value
+            no-border>
+          </b-form-rating>
+        </b-card-text>
       </b-card>
     </b-card-group>
   </b-container>
@@ -33,6 +49,7 @@ query {
         title
         type
         bookTitle
+        rating
       }
     }
   }
@@ -77,7 +94,7 @@ export default {
       } else {
         return "primary"
       }
-    }     
+    },  
   }
 }
 </script>
@@ -91,5 +108,8 @@ export default {
   #body {
     margin-top: 35px;
     margin-bottom: 0px;
+  }
+  #ratingId {
+    background-color: rgba(245, 245, 220, 0);
   }
 </style>
