@@ -27,7 +27,7 @@ Recipe.vue allows you to view and edit established recipe.
       <p class="mt-1 mb-1">Title: {{ recipe.bookTitle }}</p>
       <p class="mt-1 mb-1">Page: {{ recipe.bookPage }}</p>
       <p class="mt-1 mb-1">Image: {{ recipe.bookImagePath }}</p>
-      <img :src=imageUrl>
+      <img :src=imageUrl v-if="recipe.bookImagePath">
     </b-container>
 <!-- Notes -->
     <p class="mt-1 mb-1">Notes: </p>
@@ -76,7 +76,8 @@ export default {
         return "dark"
       } else {
         return "light"
-      },
+      }
+    },
     imageUrl: function() {
       var filename = this.recipe.bookImagePath
       return "http://192.168.50.9:5000/image/" + filename
