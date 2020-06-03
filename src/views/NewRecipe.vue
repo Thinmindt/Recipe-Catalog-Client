@@ -99,34 +99,104 @@ NewRecipe.vue adds a new recipe.
           ></b-form-file>
         </b-col>
       </b-form-row>
-<!-- Type ends, Notes begins -->
+<!-- Type ends,  -->
+<!-- Notes begins -->
       <b-form-row class="mb-1">
-        <b-col >
+        <b-col cols="2">
           <label for="notes-input">Notes:</label>
         </b-col>
+<!-- End of Title Lable -->
+<!-- Begin notesEditor -->
         <b-col>
           <div class="editor">
+<!-- Begin EditorMenu -->
             <editor-menu-bar :editor="editor" v-slot="{commands, isActive}">
-              <div class="editorMenuBar">
-                <button           
+              <div class="editorMenuBar mb-1" id="menuBarStyle">
+<!-- Begin Buttons -->
+                <button type="button"        
                   class="menubar__button"
                   :class="{ 'is-active': isActive.bold() }"
                   @click="commands.bold"
-                 >
-                  Bold
+                >
+                  <b-icon icon="type-bold"></b-icon>
                 </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.italic() }"
+                  @click="commands.italic"
+                >
+                  <b-icon icon="type-italic"></b-icon>
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.underline() }"
+                  @click="commands.underline"
+                >
+                  <b-icon icon="type-underline"></b-icon>  
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.paragraph() }"
+                  @click="commands.paragraph"
+                >
+                  p
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                  @click="commands.heading({ level: 1 })"
+                >
+                  <b-icon icon="type-h1"></b-icon>  
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                  @click="commands.heading({ level: 2 })"
+                >
+                  <b-icon icon="type-h2"></b-icon>  
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                  @click="commands.heading({ level: 3 })"
+                >
+                  <b-icon icon="type-h3"></b-icon>  
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.bullet_list() }"
+                  @click="commands.bullet_list"
+                >
+                  <b-icon icon="list-ul"></b-icon>
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  :class="{ 'is-active': isActive.ordered_list() }"
+                  @click="commands.ordered_list"
+                >
+                  <b-icon icon="list-ol"></b-icon>
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  @click="commands.undo"
+                >
+                  <b-icon icon="arrow90deg-left"></b-icon>
+                </button>
+                <button type="button"
+                  class="menubar__button"
+                  @click="commands.redo"
+                >
+                  <b-icon icon="arrow90deg-right"></b-icon>
+                </button>
+<!-- End of Buttons -->
               </div>  
             </editor-menu-bar>
-            <div class="editorContent">
-              <editor-content class="editor__content" :editor="editor" /> 
+<!-- End of EditorMenu -->
+<!-- Begin EditorContent -->
+            <div class="editorContent" id="notesEditor">
+              <editor-content class="editor__content" :editor="editor"/> 
             </div>
           </div>
-          <!-- <b-form-textarea
-            id="notes-input"
-            v-model="form.notes"
-            placeholder="Enter notes about the recipe here..."
-            rows="15"
-          ></b-form-textarea> -->
         </b-col>
       </b-form-row>
 <!-- Notes end, Rating begins -->
@@ -170,7 +240,8 @@ import gql from 'graphql-tag'
 import { GET_ALL_RECIPES } from './Home.vue'
 import { GET_ONE_RECIPE } from './Recipe.vue'
 
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
+import { Editor, EditorContent, EditorMenuBar, Extension } from 'tiptap'
+import { insertText } from 'tiptap-commands'
 import {
   Blockquote,
   CodeBlock,
@@ -294,7 +365,21 @@ export default {
           new Underline(),
           new History(),
         ],
-      content: '<p>Content</p>'
+      nativeExtensions: [
+        new class extends Extension {
+          keys() {
+            return {
+              Tab () {
+                insertText('    ')
+              }
+            }
+          }
+        }
+      ],
+      content: `<p>Enter notes here</p>`,
+      onUpdate: ({ getHTML}) => {
+        this.form.notes = getHTML()
+      }
     })
   },
   methods: {
@@ -448,15 +533,17 @@ export default {
         this.form.book.page = recipe.bookPage
         this.form.book.picture = null
         this.form.web.link = recipe.webLink
+        this.editor.setContent(this.form.notes)
       } else {
         this.form.title = ''
         this.form.rating = 0
-        this.form.notes = ''
+        this.form.notes = '<p>Enter notes here (not visible)</p>'
         this.form.recipeType = ''
         this.form.book.title = ''
         this.form.book.page = 0
         this.form.book.picture = null
         this.form.web.link = ''
+        this.editor.setContent(this.form.notes)
       }
     }
   },
@@ -488,5 +575,12 @@ export default {
 }
 #rating-input {
   background-color: rgba(245, 245, 220, 0);
+}
+#notesEditor {
+  background-color: white;
+  color:black
+}
+.editorMenuBar {
+  margin: 0px;
 }
 </style>
