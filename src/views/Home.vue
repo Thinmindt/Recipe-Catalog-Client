@@ -109,7 +109,4 @@ export default {
     margin-top: 35px;
     margin-bottom: 0px;
   }
-  #ratingId {
-    background-color: rgba(245, 245, 220, 0);
-  }
 </style>
