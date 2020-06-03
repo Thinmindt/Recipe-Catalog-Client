@@ -5,18 +5,30 @@ Recipe.vue allows you to view and edit established recipe.
 <template>
   <b-container class="recipe" v-if="recipe">
 <!-- Title -->
-    <h1 class="mt-3 mb-1">{{ recipe.title }}
-        <b-form-rating 
-          :id="ratingId" 
-          class="mt-1 mb-1"
-          v-model="recipe.rating" 
-          readonly 
-          variant="warning" 
-          size="sm" 
-          inline value="10" 
-          no-border>
-        </b-form-rating>
+    <b-row align-v="end">
+      <b-col>
+        <h1 class="mt-3 mb-1">{{ recipe.title }} 
+          <b-form-rating 
+            id="ratingId" 
+            class="mt-1 mb-1"
+            v-model="recipe.rating" 
+            readonly 
+            variant="warning" 
+            size="sm" 
+            inline value="10" 
+            no-border>
+          </b-form-rating>
         </h1>
+      </b-col>
+  <!-- Edit Button -->
+      <b-col cols="*" align-h="end">
+        <div>
+          <b-button variant="success" @click="editRecipe">
+            Edit
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
 <!-- Link -->
     <p class="mt-1 mb-1">
       Link: 
@@ -32,14 +44,6 @@ Recipe.vue allows you to view and edit established recipe.
 <!-- Notes -->
     <p class="mt-1 mb-1">Notes: </p>
     <p class="mb-5" v-html="recipe.notes" id="notesDescription"></p>
-<!-- Buttons -->
-    <b-row align-h="end">
-      <div>
-        <b-button variant="success" @click="editRecipe">
-          Edit
-        </b-button>
-      </div>
-    </b-row>
     <img v-for="image in recipe.images.edges" v-bind:key="image.node.id" :src="resolveImageUrl(image.node.filename)">
   </b-container>
 </template>
@@ -80,13 +84,6 @@ export default {
     }
   },
   computed: {
-    ratingId: function () {
-      if (this.darkMode) {
-        return "dark"
-      } else {
-        return "light"
-      }
-    },
     imageUrl: function() {
       var filename = this.recipe.bookImagePath
       return "http://192.168.50.9:5000/image/" + filename
@@ -125,10 +122,10 @@ export default {
   background-color: rgb(231, 182, 182);
 }
 #notesDescription {
-  background-color:#1d195588;
+  background-color:#3f33ec8a;
   padding-left: 25px;
   padding-right: 10px;
-  padding-top: 15px;
+  padding-top: 5px;
   padding-bottom: 5px;
 }
 </style>

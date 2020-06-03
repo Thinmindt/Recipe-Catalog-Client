@@ -66,4 +66,7 @@ body {
   min-height: 100vh;
   color:white;
 }
+#ratingId {
+  background-color:transparent;
+}
 </style>
