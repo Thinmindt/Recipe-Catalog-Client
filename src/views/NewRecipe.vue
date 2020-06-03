@@ -191,9 +191,6 @@ import {
   History,
 } from 'tiptap-extensions'
 
-/** For file uploads */
-//import { useMutation } from '@apollo/react-hooks'
-
 /**
  * GraphQL query for creating a new recipe entry
  */
@@ -315,7 +312,7 @@ export default {
               webLink: this.form.web.link,
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
-              image: this.form.book.picture
+              bookImage: this.form.book.picture
             }
           },
           // eslint-disable-next-line
@@ -352,7 +349,7 @@ export default {
               webLink: this.form.web.link,
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
-              image: this.form.book.picture
+              bookImage: this.form.book.picture
             }
           },
           // eslint-disable-next-line
