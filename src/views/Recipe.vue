@@ -31,7 +31,7 @@ Recipe.vue allows you to view and edit established recipe.
     </b-container>
 <!-- Notes -->
     <p class="mt-1 mb-1">Notes: </p>
-    <p class="mb-5">{{ recipe.notes }}</p>
+    <p class="mb-5" v-html="recipe.notes" id="notesDescription"></p>
 <!-- Buttons -->
     <b-row align-h="end">
       <div>
@@ -111,5 +111,12 @@ export default {
 }
 #light {
   background-color: rgb(231, 182, 182);
+}
+#notesDescription {
+  background-color:#1d195588;
+  padding-left: 25px;
+  padding-right: 10px;
+  padding-top: 15px;
+  padding-bottom: 5px;
 }
 </style>
