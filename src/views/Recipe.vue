@@ -40,6 +40,7 @@ Recipe.vue allows you to view and edit established recipe.
         </b-button>
       </div>
     </b-row>
+    <img v-for="image in recipe.images.edges" v-bind:key="image.node.id" :src="resolveImageUrl(image.node.filename)">
   </b-container>
 </template>
 
@@ -60,6 +61,14 @@ query OneRecipe ($recipeId: ID!) {
     bookImagePath
     notes
     rating
+    images {
+      edges {
+        node {
+          id
+          filename
+        }
+      }
+    }
   }
 }`
 export default {
@@ -86,6 +95,9 @@ export default {
   methods: {
     editRecipe: function () {
       this.$router.push({ name: "EditRecipe", params: {recipeId: this.recipeId}})
+    },
+    resolveImageUrl: function (filename) {
+      return "http://192.168.50.9:5000/image/" + filename
     }
   },
   apollo: {
