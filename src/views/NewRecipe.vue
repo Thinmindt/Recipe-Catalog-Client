@@ -6,9 +6,20 @@ NewRecipe.vue adds a new recipe.
   <b-container id="NewRecipe">
     <div v-if="error">{{ error }}</div>
     <b-form @submit="onSubmit" @reset="onReset">
-<!-- Title form begins -->
+<!-- Rating and trash button begins -->
       <b-form-row>
+        <b-col cols="2">
+          <label for="rating-input">Rating:</label>
+        </b-col>
         <b-col>
+          <b-form-rating
+            id="ratingId"
+            v-model="form.rating"
+            variant="warning"
+            no-border
+            size="md" 
+            inline value="10" 
+          ></b-form-rating>
         </b-col>
         <b-col align-self="end" cols="*" class="mb-3">
           <b-button 
@@ -20,6 +31,7 @@ NewRecipe.vue adds a new recipe.
             </b-button>
         </b-col>
       </b-form-row>
+<!-- Title form begins -->
       <b-form-row class="mb-1">
         <b-col cols="2">
           <label for="title-input">Title: </label>
@@ -193,27 +205,13 @@ NewRecipe.vue adds a new recipe.
             </editor-menu-bar>
 <!-- End of EditorMenu -->
 <!-- Begin EditorContent -->
-            <div class="editorContent" id="notesEditor">
-              <editor-content class="editor__content" :editor="editor"/> 
+            <div class="editorContent mb-1">
+              <editor-content id="editor__content" :editor="editor"/> 
             </div>
           </div>
         </b-col>
       </b-form-row>
-<!-- Notes end, Rating begins -->
-      <b-form-row class="mb-5">
-        <b-col cols="2">
-          <label for="rating-input">Rating:</label>
-        </b-col>
-        <b-col>
-          <b-form-rating
-            id="rating-input"
-            v-model="form.rating"
-            variant="warning"
-            no-border
-          ></b-form-rating>
-        </b-col>
-      </b-form-row>
-<!-- Rating end, submit begins -->
+<!-- Notes end, submit begins -->
       <b-form-row class="mb-3">
         <b-col > 
           <!-- empty column to offset submit block-->
@@ -569,19 +567,30 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #NewRecipe {
+  margin: auto; 
   margin-top: 50px;
   color: white;
 }
-#rating-input {
+.editorContent {
   background-color: rgba(245, 245, 220, 0);
 }
-#notesEditor {
+.ProseMirror {
   background-color: white;
-  color:black
+  color:black;
+  max-height: 500px;
+  min-height: 200px;
+  border-radius: 4px;
+  overflow: auto;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
-.editorMenuBar {
-  margin: 0px;
+.menubar__button {
+  width:9%;
+  border-radius: 4px;
+  margin-left: 0px;
 }
 </style>
