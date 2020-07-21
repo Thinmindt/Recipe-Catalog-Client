@@ -19,6 +19,9 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueApollo)
 
+const hostname = 'http://192.168.42.4:5000/'
+Vue.prototype.$hostname = hostname
+
 // Use this during production so the back-end can communicate with front-end securely:
 
 // const getHeaders = () => {
@@ -32,7 +35,7 @@ Vue.use(VueApollo)
 
 // Create an http link:
 const link = createUploadLink({
-  uri: 'http://192.168.42.4:5000/graphql'
+  uri: hostname + 'graphql'
 })
 
 const client = new ApolloClient({
