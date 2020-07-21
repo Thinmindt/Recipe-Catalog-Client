@@ -32,7 +32,7 @@ Vue.use(VueApollo)
 
 // Create an http link:
 const link = createUploadLink({
-  uri: 'http://192.168.50.9:5000/graphql'
+  uri: 'http://192.168.42.4:5000/graphql'
 })
 
 const client = new ApolloClient({
