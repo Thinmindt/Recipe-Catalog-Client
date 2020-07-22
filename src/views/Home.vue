@@ -47,7 +47,7 @@ query {
       node {
         id
         title
-        type
+        sourceType
         bookTitle
         rating
       }

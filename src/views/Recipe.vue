@@ -33,9 +33,9 @@ Recipe.vue allows you to view and edit established recipe.
     <p class="mt-1 mb-1">
       Link: 
     </p>
-    <p v-if="recipe.type == 'Website'">{{ recipe.webLink }}</p>
+    <p v-if="recipe.sourceType == 'Website'">{{ recipe.webLink }}</p>
 <!-- Book Stuff -->
-    <b-container v-if="recipe.type == 'Book'" class="border border-dark mt-1 mb-3">
+    <b-container v-if="recipe.sourceType == 'Book'" class="border border-dark mt-1 mb-3">
       <p class="mt-1 mb-1">Title: {{ recipe.bookTitle }}</p>
       <p class="mt-1 mb-1">Page: {{ recipe.bookPage }}</p>
       <p class="mt-1 mb-1">Image: {{ recipe.bookImagePath }}</p>
@@ -57,7 +57,7 @@ query OneRecipe ($recipeId: ID!) {
   recipe (id: $recipeId) {
     id
     title
-    type
+    sourceType
     webLink
     bookTitle
     bookPage
