@@ -100,10 +100,11 @@ NewRecipe.vue adds a new recipe.
 <!-- Book picture option begins -->
       <b-form-row v-if="isBook" class="mb-1">
         <b-col cols="2">
-          <label for="book-picture">Picture(s):</label>
+          <label for="book-picture">Picture of Recipe:</label>
         </b-col>
         <b-col>
           <b-form-file
+            id="book-picture"
             v-model="form.book.picture"
             :state="Boolean(form.book.picture)"
             accept="image/*"
@@ -211,7 +212,9 @@ NewRecipe.vue adds a new recipe.
           </div>
         </b-col>
       </b-form-row>
-<!-- Notes end, submit begins -->
+<!-- Notes end, image input begins -->
+      <ImageInput :pictures=form.pictures></ImageInput>
+<!-- Image input ends, submit begins -->
       <b-form-row class="mb-3">
         <b-col > 
           <!-- empty column to offset submit block-->
@@ -234,6 +237,7 @@ NewRecipe.vue adds a new recipe.
 </template>
 
 <script>
+import ImageInput from '../components/ImageInput.vue'
 import gql from 'graphql-tag'
 import { GET_ALL_RECIPES } from './Home.vue'
 import { GET_ONE_RECIPE } from './Recipe.vue'
@@ -334,7 +338,8 @@ export default {
   props: ['darkMode', 'recipeId'],
   components: {
     EditorContent,
-    EditorMenuBar
+    EditorMenuBar,
+    ImageInput
   },
   data () {
     return {
@@ -350,7 +355,13 @@ export default {
           title: '',
           page: 0,
           picture: null
-        }
+        },
+        pictures: [
+          { 
+            id: 0,
+            value: null
+          }
+        ]
       },
       recipeTypes: ['Book', 'Website'],
       allRecipes: [],
@@ -398,6 +409,10 @@ export default {
   },
   methods: {
     async onSubmit() {
+      // Create a list of images to send to server
+      var recipeImages = []
+      this.form.pictures.forEach(image => recipeImages.push(image.value))
+
       if (!this.recipeId) { // Not editing recipe, submit new one
         // submit mutation request
         await this.$apollo.mutate({
@@ -412,7 +427,7 @@ export default {
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
               bookImage: this.form.book.picture,
-              recipeImages: []
+              recipeImages: recipeImages
             }
           },
           // eslint-disable-next-line
@@ -451,7 +466,7 @@ export default {
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
               bookImage: this.form.book.picture,
-              recipeImages: []
+              recipeImages: recipeImages
             }
           },
           // eslint-disable-next-line
