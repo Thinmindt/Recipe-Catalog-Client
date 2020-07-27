@@ -5,7 +5,7 @@ NewRecipe.vue adds a new recipe.
 <template>
   <b-container id="NewRecipe">
     <div v-if="error">{{ error }}</div>
-    <b-form @submit="onSubmit" @reset="onReset">
+    <b-form @submit.prevent="onSubmit" @reset="onReset">
 <!-- Rating and trash button begins -->
       <b-form-row>
         <b-col cols="2">
@@ -269,13 +269,21 @@ mutation SubmitRecipe($input: CreateRecipeInput!){
     recipe {
       id
       title
-      type
+      sourceType
       webLink
       bookTitle
       bookPage
       bookImagePath
       notes
       rating
+      images {
+        edges {
+          node {
+            id
+            filename
+          }
+        }
+      }
     }
   }
 }
@@ -290,13 +298,21 @@ mutation UpdateRecipe($input: UpdateRecipeInput!){
     recipe {
       id
       title
-      type
+      sourceType
       webLink
       bookTitle
       bookPage
       bookImagePath
       notes
       rating
+      images {
+        edges {
+          node {
+            id
+            filename
+          }
+        }
+      }
     }
   }
 }
@@ -389,7 +405,7 @@ export default {
           variables: {
             input: {
               title: this.form.title,
-              type: this.form.recipeType,
+              sourceType: this.form.recipeType,
               notes: this.form.notes,
               rating: this.form.rating,
               webLink: this.form.web.link,
@@ -415,6 +431,7 @@ export default {
                 data
               })
             } catch (e) {
+              console.log(JSON.stringify(e.message))
               console.error(e)
             }
           }
@@ -427,13 +444,14 @@ export default {
             input: {
               id: this.recipeId,
               title: this.form.title,
-              type: this.form.recipeType,
+              sourceType: this.form.recipeType,
               notes: this.form.notes,
               rating: this.form.rating,
               webLink: this.form.web.link,
               bookTitle: this.form.book.title,
               bookPage: this.form.book.page,
-              bookImage: this.form.book.picture
+              bookImage: this.form.book.picture,
+              recipeImages: []
             }
           },
           // eslint-disable-next-line
@@ -457,6 +475,7 @@ export default {
                 data
               })
             } catch (e) {
+              console.log(JSON.stringify(e.message))
               console.error(e)
             }
           }
@@ -499,6 +518,7 @@ export default {
               this.$router.push({ name: "Home"})
             } catch (e) {
               console.error(e)
+              console.log(JSON.stringify(e.message))
             }
           }
         }
@@ -527,7 +547,7 @@ export default {
         this.form.title = recipe.title
         this.form.rating = recipe.rating
         this.form.notes = recipe.notes
-        this.form.recipeType = recipe.type
+        this.form.recipeType = recipe.sourceType
         this.form.book.title = recipe.bookTitle
         this.form.book.page = recipe.bookPage
         this.form.book.picture = null
