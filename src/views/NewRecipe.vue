@@ -213,7 +213,8 @@ NewRecipe.vue adds a new recipe.
         </b-col>
       </b-form-row>
 <!-- Notes end, image input begins -->
-      <ImageInput :pictures=form.pictures></ImageInput>
+      <ImageInput v-if="recipe" :formPictures=form.pictures :existingPictures=recipe.images.edges></ImageInput>
+      <ImageInput v-if="!recipe" :formPictures=form.pictures></ImageInput>
 <!-- Image input ends, submit begins -->
       <b-form-row class="mb-3">
         <b-col > 
