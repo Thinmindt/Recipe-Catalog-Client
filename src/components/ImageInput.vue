@@ -8,6 +8,9 @@
       <b-col>
         <b-img thumbnail :src="resolveImageUrlWidth(image.node.filename, 300, 300)" fluid></b-img>
       </b-col>
+      <b-col>
+        <button @click="removeExistingImage(image.node.id)">-</button>
+      </b-col>
     </b-form-row>
     </div>
     <b-form-row class="mb-1" v-for="picture in formPictures" v-bind:key="picture.id">
@@ -39,7 +42,21 @@
 </template>
 
 <script>
-import resolveImage from '../mixins/resolveImage';
+import resolveImage from '@/mixins/resolveImage';
+import { GET_ONE_RECIPE } from '@/views/Recipe.vue';
+import gql from 'graphql-tag';
+
+/** 
+ * GraphQL Query to delete a recipe
+ */
+export const DELETE_IMAGE = gql`
+mutation DeleteImage($input: DeleteImageInput!){
+  deleteImage (input: $input) {
+    ok
+  }
+}
+`
+
 export default {
   name: "ImageInput",
   mixins: [ resolveImage ],
@@ -47,7 +64,7 @@ export default {
      return {
      }
   },
-  props: ['formPictures', 'existingPictures'],
+  props: ['formPictures', 'existingPictures', 'recipeId'],
   methods: {
     addAnotherPicture: function () {
       var newIndex = 0;
@@ -65,6 +82,47 @@ export default {
       } else {
         this.formPictures[0].value = null;
       }
+    },
+    removeExistingImage: function(imageId) {
+      this.$apollo.mutate({
+        mutation: DELETE_IMAGE,
+        variables: {
+          input: {
+            id: imageId
+          }
+        },
+        // eslint-disable-next-line
+        update: (cache, { data: { deleteImage } }) => {
+          // Update the cache.
+          if (deleteImage.ok) {
+            try {
+              const data = cache.readQuery({
+                query: GET_ONE_RECIPE,
+                variables: {
+                  recipeId: this.recipeId
+                }
+              })
+              var imageArray = data.recipe.images.edges;
+              console.log(imageArray);
+
+              var filteredImageArray = imageArray.filter(function(value) {value.id != imageId});
+              data.recipe.images.edges = filteredImageArray;
+              console.log(imageArray)
+
+              cache.writeQuery({
+                query: GET_ONE_RECIPE,
+                variables: {
+                  recipeId: this.recipeId
+                },
+                data
+              })
+            } catch (e) {
+              console.error(e)
+              console.log(JSON.stringify(e.message))
+            }
+          }
+        }
+      })
     }
   },
   computed: {
