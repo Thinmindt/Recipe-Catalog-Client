@@ -413,6 +413,7 @@ export default {
       // Create a list of images to send to server
       var recipeImages = []
       this.form.pictures.forEach(image => recipeImages.push(image.value))
+      console.log("submitted edit recipe")
 
       if (!this.recipeId) { // Not editing recipe, submit new one
         // submit mutation request

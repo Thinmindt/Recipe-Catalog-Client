@@ -9,7 +9,7 @@
         <b-img thumbnail :src="resolveImageUrlWidth(image.node.filename, 300, 300)" fluid></b-img>
       </b-col>
       <b-col>
-        <button @click="removeExistingImage(image.node.id)">-</button>
+        <b-button @click="removeExistingImage(image.node.id)">-</b-button>
       </b-col>
     </b-form-row>
     </div>
@@ -66,6 +66,11 @@ export default {
   },
   props: ['formPictures', 'existingPictures', 'recipeId'],
   methods: {
+    /**
+     * Add a new blank picture entry to formPictures.
+     * This adds a new picture input field because the 
+     * picture inputs are looped on formPictures 
+     */
     addAnotherPicture: function () {
       var newIndex = 0;
       this.formPictures.forEach(picture => {
@@ -76,6 +81,12 @@ export default {
       newIndex += 1;
       this.formPictures.push( {id: newIndex, value: null} );
     },
+    /**
+     * Remove the entry in formPictures. The picture has
+     * not been added to the database at this point, so 
+     * all we need to do is remove it from formPictures 
+     * array.
+     */
     removeAddedPicture: function(picture) {
       if(this.formPictures.length > 1) {
         this.formPictures.splice(picture.id, 1);
@@ -83,6 +94,10 @@ export default {
         this.formPictures[0].value = null;
       }
     },
+    /**
+     * Remove a picture from the database by imageId. 
+     * Updates the cache in update function.
+     */
     removeExistingImage: function(imageId) {
       this.$apollo.mutate({
         mutation: DELETE_IMAGE,
@@ -104,10 +119,14 @@ export default {
               })
               var imageArray = data.recipe.images.edges;
               console.log(imageArray);
+              console.log(imageId)
 
-              var filteredImageArray = imageArray.filter(function(value) {value.id != imageId});
+              var filteredImageArray = imageArray.filter(function(value) {
+                console.log("in filter callback: " + value)
+                return (value.node.id != imageId)
+                });
               data.recipe.images.edges = filteredImageArray;
-              console.log(imageArray)
+              console.log(filteredImageArray)
 
               cache.writeQuery({
                 query: GET_ONE_RECIPE,
@@ -126,6 +145,11 @@ export default {
     }
   },
   computed: {
+    /**
+     * Indicate if all formPictures have inputs filled.
+     * Returns true if all objects in formPictures are 
+     * non-null. False otherwise.
+     */
     pictureInputsFull: function() {
       var full = true;
       this.formPictures.forEach(element => {
@@ -135,6 +159,10 @@ export default {
       });
       return full;
     },
+    /**
+     * Returns the greatest index value from formPictures
+     * array.
+     */
     lastIndex: function() {
       var last = 0;
       this.formPictures.forEach(element => {
