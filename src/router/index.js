@@ -15,6 +15,12 @@ const routes = [
       path: '/',
       name: 'Home',
       component: Home,
+      props: true
+    },
+    {
+      path: '/:category',
+      name: 'HomeCategory',
+      component: Home,
       props: true 
     },
     {

@@ -45,7 +45,21 @@ NewRecipe.vue adds a new recipe.
           ></b-form-input>
         </b-col>
       </b-form-row>
-<!-- Title ends, Type begins -->      
+<!-- Title ends, Category begins -->      
+      <b-form-row class="mb-1">
+        <b-col cols="2">
+          <label for="category-input">Category:</label>
+        </b-col>
+        <b-col>
+          <b-form-select
+            id="category-input"
+            v-model="form.category"
+            :options="categoryNames"
+            required
+          ></b-form-select>
+        </b-col>
+      </b-form-row >
+<!-- Category ends, Type begins -->
       <b-form-row class="mb-1">
         <b-col cols="2">
           <label for="type-input">Type:</label>
@@ -240,7 +254,7 @@ NewRecipe.vue adds a new recipe.
 <script>
 import ImageInput from '../components/ImageInput.vue'
 import gql from 'graphql-tag'
-import { GET_ALL_RECIPES } from './Home.vue'
+import { GET_ALL_RECIPES, GET_CATEGORIES } from './Home.vue'
 import { GET_ONE_RECIPE } from './Recipe.vue'
 
 import { Editor, EditorContent, EditorMenuBar, Extension } from 'tiptap'
@@ -274,6 +288,10 @@ mutation SubmitRecipe($input: CreateRecipeInput!){
     recipe {
       id
       title
+      recipeCategory {
+        id
+        name
+      }
       sourceType
       webLink
       bookTitle
@@ -303,6 +321,10 @@ mutation UpdateRecipe($input: UpdateRecipeInput!){
     recipe {
       id
       title
+      recipeCategory {
+        id
+        name
+      }
       sourceType
       webLink
       bookTitle
@@ -346,6 +368,7 @@ export default {
     return {
       form: {
         title: '',
+        category: null,
         recipeType: null,
         notes: '',
         rating: 0,
@@ -366,6 +389,7 @@ export default {
       },
       recipeTypes: ['Book', 'Website'],
       allRecipes: [],
+      recipeCategories: [],
       error: null,
       editor: null
     }
@@ -414,6 +438,7 @@ export default {
       var recipeImages = []
       this.form.pictures.forEach(image => recipeImages.push(image.value))
       console.log("submitted edit recipe")
+      var currentRecipeId = this.recipeId;
 
       if (!this.recipeId) { // Not editing recipe, submit new one
         // submit mutation request
@@ -422,6 +447,7 @@ export default {
           variables: {
             input: {
               title: this.form.title,
+              category: this.form.category,
               sourceType: this.form.recipeType,
               notes: this.form.notes,
               rating: this.form.rating,
@@ -447,6 +473,9 @@ export default {
                 query: GET_ALL_RECIPES,
                 data
               })
+              currentRecipeId = insertedRecipe.node.id;
+              console.log(insertedRecipe)
+              console.log(currentRecipeId)
             } catch (e) {
               console.log(JSON.stringify(e.message))
               console.error(e)
@@ -461,6 +490,7 @@ export default {
             input: {
               id: this.recipeId,
               title: this.form.title,
+              category: this.form.category,
               sourceType: this.form.recipeType,
               notes: this.form.notes,
               rating: this.form.rating,
@@ -497,8 +527,8 @@ export default {
             }
           }
         })
-        this.$router.push({ name: "Recipe", params: {recipeId: this.recipeId} })
       }
+      this.$router.push({ name: "Recipe", params: {recipeId: currentRecipeId} })
     },
     onReset: function () {
       this.$router.push({ name: "Recipe", params: {recipeId: this.recipeId} })
@@ -556,12 +586,26 @@ export default {
       } else {
         return false
       }
+    },
+    categoryNames: function() {
+      if (!this.$apolloData.queries.recipeCategories.loading) {
+        var categories = []
+        console.log(this.recipeCategories)
+        this.recipeCategories.edges.forEach(element => 
+          categories.push(element.node.name)
+        )
+        console.log(categories)
+        categories.sort()
+        return categories
+      }
+      return []
     }
   },
   watch: {
     recipe: function (recipe) {
       if (recipe) {
         this.form.title = recipe.title
+        this.form.category = recipe.recipeCategory.name
         this.form.rating = recipe.rating
         this.form.notes = recipe.notes
         this.form.recipeType = recipe.sourceType
@@ -595,6 +639,12 @@ export default {
         if (this.recipeId) {
           this.error = JSON.stringify(error.message)
         }
+      }
+    },
+    recipeCategories: {
+      query: GET_CATEGORIES,
+      error (error) {
+        this.error = JSON.stringify(error.message)
       }
     }
   },

@@ -29,6 +29,10 @@ Recipe.vue allows you to view and edit established recipe.
         </div>
       </b-col>
     </b-row>
+<!-- Category -->
+    <p class="mt-1 mb-1" v-if="recipe.recipeCategory">
+      Category: {{ recipe.recipeCategory.name }}
+    </p>
 <!-- Link -->
     <p class="mt-1 mb-1">
       Link: 
@@ -62,6 +66,10 @@ query OneRecipe ($recipeId: ID!) {
   recipe (id: $recipeId) {
     id
     title
+    recipeCategory {
+      id
+      name
+    }
     sourceType
     webLink
     bookTitle

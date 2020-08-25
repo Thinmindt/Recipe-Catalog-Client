@@ -5,10 +5,14 @@ App.vue contains: navigataion bar, darkMode toggle setup and style options.
 <template>
   <div id="app" :class="cssClass">
     <b-navbar type="dark" variant="info">
-      <b-navbar-brand to="/">Recipe Catalog</b-navbar-brand>
+      <b-navbar-brand @click="redirectToHome()">Recipe Catalog</b-navbar-brand>
       <b-navbar-nav>
         <b-nav-item @click="redirectToNewRecipe()">New</b-nav-item>
-        <b-nav-item to="#" disabled>Categories</b-nav-item>
+        <b-nav-item-dropdown text="Categories" v-if="recipeCategories">
+          <b-dropdown-item @click="redirectToCategory(category)" v-for="category in recipeCategories.edges" v-bind:key="category.node.id">
+            {{ category.node.name }}
+          </b-dropdown-item>
+        </b-nav-item-dropdown>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto"> 
         <b-form-checkbox switch id="dark_mode" v-model="darkMode">Dark mode
@@ -20,12 +24,15 @@ App.vue contains: navigataion bar, darkMode toggle setup and style options.
 </template>
 
 <script>
+import { GET_CATEGORIES } from './views/Home.vue'
+
 // vue specific tool:
 export default { 
   name: 'App',
   data () {
     return {
-      darkMode: true
+      darkMode: true,
+      category: null,
     }
   },
   computed: {  // computed: variable depends on another reactive variable:
@@ -41,6 +48,20 @@ export default {
   methods: {
     redirectToNewRecipe() {
       this.$router.push({ name: 'NewRecipe'})
+    },
+    redirectToCategory(category) {
+        this.$router.push({ name: 'HomeCategory', params: {category: category.node.name}});
+    },
+    redirectToHome() {
+      this.$router.push({ name: 'Home', params: {category: null}});
+    }
+  },
+  apollo: {
+    recipeCategories: {
+      query: GET_CATEGORIES,
+      error (error) {
+        this.error = JSON.stringify(error.message)
+      }
     }
   }
 }
