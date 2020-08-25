@@ -89,7 +89,13 @@ export default {
      */
     removeAddedPicture: function(picture) {
       if(this.formPictures.length > 1) {
-        this.formPictures.splice(picture.id, 1);
+        var index = 0;
+        for(var i=0; i < this.formPictures.length; i++) {
+          if(this.formPictures[i].id == picture.id) {
+            index = i;
+          }
+        }
+        this.formPictures.splice(index, 1);
       } else {
         this.formPictures[0].value = null;
       }
