@@ -15,6 +15,13 @@ App.vue contains: navigataion bar, darkMode toggle setup and style options.
         </b-nav-item-dropdown>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto"> 
+        <b-nav-form>
+        <b-form-input placeholder="Search" size= sm></b-form-input>
+        <b-button variant="success" type="submit" size= sm>
+          <b-icon icon="search" class=" mb-1"></b-icon>
+          <!-- working on icon sizing -->
+        </b-button>
+          </b-nav-form>
         <b-form-checkbox switch id="dark_mode" v-model="darkMode">Dark mode
         </b-form-checkbox>
       </b-navbar-nav>
@@ -32,6 +39,7 @@ export default {
   data () {
     return {
       darkMode: true,
+      error: null,
       category: null,
     }
   },

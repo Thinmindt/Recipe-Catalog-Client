@@ -137,5 +137,6 @@ export default {
   padding-right: 10px;
   padding-top: 5px;
   padding-bottom: 5px;
+  border-radius: 4px;
 }
 </style>
