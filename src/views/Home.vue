@@ -7,7 +7,7 @@ Home.vue contains: cards component setup and style options.
     <div v-if="$apollo.queries.allRecipes.loading">Loading...</div>
     <div v-if="error">{{ error }}</div>
     <b-card-group columns>
-      <b-card v-for="recipe in allRecipes.edges" :key="recipe.id"
+      <b-card v-for="recipe in allRecipes.edges" :key="recipe.node.id"
         id="recipe_card"
         v-on:click="clickRecipe(recipe.node.id)"
         :bgVariant="cardColor"
@@ -47,7 +47,7 @@ query {
       node {
         id
         title
-        type
+        sourceType
         bookTitle
         rating
       }
