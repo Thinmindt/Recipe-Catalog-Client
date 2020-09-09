@@ -6,8 +6,10 @@ Home.vue contains: cards component setup and style options.
   <b-container class="home" id="body">
     <div v-if="$apollo.queries.allRecipes.loading">Loading...</div>
     <div v-if="error">{{ error }}</div>
+    <h1 v-if="this.category">{{this.category}}</h1>
+    <p v-if="filteredRecipes.length < 1">Couldn't find any {{category.toLowerCase()}} recipes.</p>
     <b-card-group columns>
-      <b-card v-for="recipe in allRecipes.edges" :key="recipe.node.id"
+      <b-card v-for="recipe in filteredRecipes" :key="recipe.node.id"
         id="recipe_card"
         v-on:click="clickRecipe(recipe.node.id)"
         :bgVariant="cardColor"
@@ -47,6 +49,10 @@ query {
       node {
         id
         title
+        recipeCategory {
+          id
+          name
+        }
         sourceType
         bookTitle
         rating
@@ -55,12 +61,32 @@ query {
   }
 }`
 
+export const GET_CATEGORIES = gql`
+query categories {
+  recipeCategories {
+    edges {
+      node {
+        id
+        name
+        recipes {
+          edges {
+            node {
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+}`
+
 export default {
   name: 'Home',
-  props: ['darkMode'],
+  props: ['darkMode', 'category'],
   data () {
     return {
       allRecipes: [],
+      recipeCategories: [],
       error: null
     }
   },
@@ -75,6 +101,12 @@ export default {
   apollo: {
     allRecipes: {
       query: GET_ALL_RECIPES,
+      error (error) {
+        this.error = JSON.stringify(error.message)
+      }
+    },
+    recipeCategories: {
+      query: GET_CATEGORIES,
       error (error) {
         this.error = JSON.stringify(error.message)
       }
@@ -94,7 +126,22 @@ export default {
       } else {
         return "primary"
       }
-    },  
+    },
+    filteredRecipes: function () {
+      if (this.category && this.allRecipes.edges) {
+        var recipes = []
+        console.log(this.allRecipes.edges)
+        this.allRecipes.edges.forEach(element => {
+          if((element.node.recipeCategory) && (element.node.recipeCategory.name == this.category)) {
+            recipes.push(element);
+          }
+        })
+        return recipes;
+      }
+      return this.allRecipes.edges;
+
+      
+    }
   }
 }
 </script>

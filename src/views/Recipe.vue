@@ -29,13 +29,17 @@ Recipe.vue allows you to view and edit established recipe.
         </div>
       </b-col>
     </b-row>
+<!-- Category -->
+    <p class="mt-1 mb-1" v-if="recipe.recipeCategory">
+      Category: {{ recipe.recipeCategory.name }}
+    </p>
 <!-- Link -->
     <p class="mt-1 mb-1">
       Link: 
     </p>
-    <p v-if="recipe.type == 'Website'">{{ recipe.webLink }}</p>
+    <p v-if="recipe.sourceType == 'Website'">{{ recipe.webLink }}</p>
 <!-- Book Stuff -->
-    <b-container v-if="recipe.type == 'Book'" class="border border-dark mt-1 mb-3">
+    <b-container v-if="recipe.sourceType == 'Book'" class="border border-dark mt-1 mb-3">
       <p class="mt-1 mb-1">Title: {{ recipe.bookTitle }}</p>
       <p class="mt-1 mb-1">Page: {{ recipe.bookPage }}</p>
       <p class="mt-1 mb-1">Image: {{ recipe.bookImagePath }}</p>
@@ -44,10 +48,15 @@ Recipe.vue allows you to view and edit established recipe.
 <!-- Notes -->
     <p class="mt-1 mb-1">Notes: </p>
     <p class="mb-5" v-html="recipe.notes" id="notesDescription"></p>
+<!-- Pictures -->
+    <p v-for="image in recipe.images.edges" :key="image.node.id">
+      <b-img :src="resolveImageUrl(image.node.filename)" fluid alt="Responsive image"></b-img>
+    </p>
   </b-container>
 </template>
 
 <script>
+import resolveImage from '../mixins/resolveImage'
 import gql from 'graphql-tag'
 /**
  * GraphQL query to get data for a single recipe
@@ -57,7 +66,11 @@ query OneRecipe ($recipeId: ID!) {
   recipe (id: $recipeId) {
     id
     title
-    type
+    recipeCategory {
+      id
+      name
+    }
+    sourceType
     webLink
     bookTitle
     bookPage
@@ -76,6 +89,7 @@ query OneRecipe ($recipeId: ID!) {
 }`
 export default {
   name: 'Recipe',
+  mixins: [resolveImage],
   props: ['recipeId', 'darkMode'],
   data () {
     return {
@@ -91,9 +105,6 @@ export default {
   methods: {
     editRecipe: function () {
       this.$router.push({ name: "EditRecipe", params: {recipeId: this.recipeId}})
-    },
-    resolveImageUrl: function (filename) {
-      return this.$hostname + 'image/' + filename
     }
   },
   apollo: {

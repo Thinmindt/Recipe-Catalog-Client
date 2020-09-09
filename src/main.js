@@ -19,7 +19,7 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueApollo)
 
-const hostname = 'http://192.168.42.4:5000/'
+const hostname = process.env.VUE_APP_ROOT_API
 Vue.prototype.$hostname = hostname
 
 // Use this during production so the back-end can communicate with front-end securely:
