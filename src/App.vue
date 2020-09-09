@@ -5,11 +5,13 @@ App.vue contains: navigataion bar, darkMode toggle setup and style options.
 <template>
   <div id="app" :class="cssClass">
     <b-navbar type="dark" variant="info">
-      <b-navbar-brand to="/">Recipe Catalog</b-navbar-brand>
+      <b-navbar-brand @click="redirectToHome()">Recipe Catalog</b-navbar-brand>
       <b-navbar-nav>
         <b-nav-item @click="redirectToNewRecipe()">New</b-nav-item>
-        <b-nav-item-dropdown v-if="!$apollo.queries.recipeCategories.loading" text="Categories">
-          <b-dropdown-item v-for="category in recipeCategories.edges" v-bind:key=category.node.id href="#">{{category.node.name}}</b-dropdown-item>
+        <b-nav-item-dropdown text="Categories" v-if="recipeCategories">
+          <b-dropdown-item @click="redirectToCategory(category)" v-for="category in recipeCategories.edges" v-bind:key="category.node.id">
+            {{ category.node.name }}
+          </b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto"> 
@@ -29,19 +31,7 @@ App.vue contains: navigataion bar, darkMode toggle setup and style options.
 </template>
 
 <script>
-
-import gql from 'graphql-tag'
-export const GET_ALL_CATEGORIES = gql`
-query {
-  recipeCategories {
-    edges {
-      node {
-        name
-        id
-      }
-    }
-  }
-}`
+import { GET_CATEGORIES } from './views/Home.vue'
 
 // vue specific tool:
 export default { 
@@ -49,7 +39,8 @@ export default {
   data () {
     return {
       darkMode: true,
-      error: null
+      error: null,
+      category: null,
     }
   },
   computed: {  // computed: variable depends on another reactive variable:
@@ -65,11 +56,17 @@ export default {
   methods: {
     redirectToNewRecipe() {
       this.$router.push({ name: 'NewRecipe'})
+    },
+    redirectToCategory(category) {
+        this.$router.push({ name: 'HomeCategory', params: {category: category.node.name}});
+    },
+    redirectToHome() {
+      this.$router.push({ name: 'Home', params: {category: null}});
     }
-  }, 
+  },
   apollo: {
     recipeCategories: {
-      query: GET_ALL_CATEGORIES,
+      query: GET_CATEGORIES,
       error (error) {
         this.error = JSON.stringify(error.message)
       }
